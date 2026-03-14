@@ -1,0 +1,50 @@
+version: '3.8'
+name: bjsoft
+services:
+  db:
+    image: mysql:5.7
+    container_name: bjsoft_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: consultor # DB primário segundo config
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      # Automount the backup files to be imported
+      - ./backup/bjsoft18_portal.sql:/docker-entrypoint-initdb.d/1_portal.sql
+      - ./backup/bjsoft18_log.sql:/docker-entrypoint-initdb.d/2_log.sql
+
+  web:
+    image: php:7.4-apache
+    container_name: bjsoft_php
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+    command: >
+      bash -c "
+      apt-get update && 
+      apt-get install -y libzip-dev zip unzip libpng-dev libjpeg-dev libfreetype6-dev && 
+      docker-php-ext-configure gd --with-freetype --with-jpeg && 
+      docker-php-ext-install pdo pdo_mysql gd zip && 
+      a2enmod rewrite &&
+      apache2-foreground"
+
+  postgres:
+    image: postgres:15
+    container_name: bjsoft_postgres
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: root
+      POSTGRES_DB: consultor_pg
+    ports:
+      - "5433:5432"  # Usando 5433 porque a 5432 já estava em uso pelo crm_postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
+  pg_data:
