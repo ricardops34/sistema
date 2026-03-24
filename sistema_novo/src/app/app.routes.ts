@@ -1,8 +1,10 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
   {
     path: 'cadastros',
+    canActivate: [authGuard],
     children: [
       {
         path: 'estados',
@@ -21,6 +23,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/cadastros/funcoes/funcoes').then((m) => m.Funcoes),
       },
     ],
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./pages/login/login').then((m) => m.Login),
   },
   { path: '', redirectTo: 'cadastros/profissionais', pathMatch: 'full' },
 ];
