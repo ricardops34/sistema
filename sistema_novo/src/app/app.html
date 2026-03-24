@@ -1,7 +1,18 @@
 <div class="po-wrapper">
   <po-toolbar p-title="Sistema de Gestão" *ngIf="!isLoginPage" [p-profile-actions]="profileActions"></po-toolbar>
 
-  <po-menu [p-menus]="filteredMenus" *ngIf="!isLoginPage"></po-menu>
+  <div class="custom-side-menu" *ngIf="!isLoginPage && isLoggedIn">
+    <div class="menu-header-custom">
+      <div class="logo-card">
+        <img src="/logo.png" alt="RCG" class="logo-img">
+      </div>
+      <div class="welcome-box">
+        <span class="welcome-label">Bem-vindo,</span>
+        <span class="user-name">{{ userName }}</span>
+      </div>
+    </div>
+    <po-menu [p-menus]="filteredMenus" [p-filter]="true"></po-menu>
+  </div>
 
   <router-outlet></router-outlet>
 </div>

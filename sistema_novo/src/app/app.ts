@@ -53,7 +53,10 @@ export class App implements OnInit {
     { label: 'Sair', action: () => this.onLogout(), icon: 'an an-sign-out' }
   ];
 
+  userName = 'Administrador';
+
   readonly menus: Array<PoMenuItem> = [
+    { label: 'Dashboard', icon: 'an an-chart-line', link: '/cadastros/profissionais' }, // Temporário
     {
       label: 'Cadastros básicos',
       icon: 'an an-archive',
@@ -88,22 +91,14 @@ export class App implements OnInit {
       ],
     },
     {
-      label: 'Gráficos',
-      icon: 'an an-chart-bar',
-      subItems: [
-        { label: 'Horas por profissional', link: '/graficos/horas-profissional' },
-        { label: 'Valor por profissional', link: '/graficos/valor-profissional' },
-      ],
-    },
-    {
       label: 'Configurações',
       icon: 'an an-gear',
       subItems: [
-        { label: 'Dashboard', link: '/admin/dashboard' },
         { label: 'Usuários', link: '/admin/usuarios' },
         { label: 'Grupos', link: '/admin/grupos' },
         { label: 'Preferências', link: '/admin/preferencias' },
       ],
     },
+    { label: 'Sair', icon: 'an an-sign-out', action: () => this.onLogout() }
   ];
 }
