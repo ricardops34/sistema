@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { PoPageDynamicTableModule } from '@po-ui/ng-templates';
-import { PoBreadcrumb, PoPageDynamicTableField } from '@po-ui/ng-components';
+import { PoPageDynamicTableModule, PoPageDynamicTableField } from '@po-ui/ng-templates';
+import { PoBreadcrumb } from '@po-ui/ng-components';
 
 @Component({
   selector: 'app-estados',
