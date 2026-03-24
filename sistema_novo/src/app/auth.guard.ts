@@ -1,11 +1,12 @@
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from './auth.service';
 
 export const authGuard = () => {
   const router = inject(Router);
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+  const authService = inject(AuthService);
 
-  if (!isAuthenticated) {
+  if (!authService.isLoggedIn) {
     router.navigate(['/login']);
     return false;
   }

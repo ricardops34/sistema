@@ -4,6 +4,7 @@ import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 import { PoMenuItem, PoMenuModule, PoPageModule, PoToolbarModule } from '@po-ui/ng-components';
+import { AuthService } from './auth.service';
 
 @Component({
   selector: 'app-root',
@@ -13,20 +14,30 @@ import { PoMenuItem, PoMenuModule, PoPageModule, PoToolbarModule } from '@po-ui/
 })
 export class App implements OnInit {
   isLoginPage = false;
+  isLoggedIn = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit() {
-    this.isLoginPage = this.router.url.includes('/login');
+    this.authService.isAuthenticated.subscribe(state => {
+      this.isLoggedIn = state;
+    });
 
+    this.checkRoute(this.router.url);
     this.router.events.pipe(
       filter((event) => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
-      this.isLoginPage = event.url.includes('/login') || event.urlAfterRedirects.includes('/login');
+      this.checkRoute(event.url || event.urlAfterRedirects);
     });
   }
 
+  private checkRoute(url: string) {
+    this.isLoginPage = url.includes('/login');
+  }
+
   get filteredMenus(): Array<PoMenuItem> {
+    if (!this.isLoggedIn) return [];
+    
     const permissions = JSON.parse(localStorage.getItem('userPermissions') || '[]');
     if (permissions.includes('all')) {
       return this.menus;
@@ -35,9 +46,7 @@ export class App implements OnInit {
   }
 
   onLogout() {
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('userPermissions');
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 
   readonly profileActions: Array<any> = [
