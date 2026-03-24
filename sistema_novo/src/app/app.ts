@@ -49,14 +49,18 @@ export class App implements OnInit {
     this.authService.logout();
   }
 
+  readonly profile = {
+    title: 'Administrador',
+    subtitle: 'ricardo.admin',
+    avatar: 'https://avatar.iran.liara.run/public/33' // Avatar genérico
+  };
+
   readonly profileActions: Array<any> = [
     { label: 'Sair', action: () => this.onLogout(), icon: 'an an-sign-out' }
   ];
 
-  userName = 'Administrador';
-
   readonly menus: Array<PoMenuItem> = [
-    { label: 'Dashboard', icon: 'an an-chart-line', link: '/cadastros/profissionais' }, // Temporário
+    { label: 'Dashboard', icon: 'an an-chart-line', link: '/cadastros/profissionais' },
     {
       label: 'Cadastros básicos',
       icon: 'an an-archive',
@@ -98,7 +102,6 @@ export class App implements OnInit {
         { label: 'Grupos', link: '/admin/grupos' },
         { label: 'Preferências', link: '/admin/preferencias' },
       ],
-    },
-    { label: 'Sair', icon: 'an an-sign-out', action: () => this.onLogout() }
+    }
   ];
 }
