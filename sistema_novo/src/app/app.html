@@ -1,7 +1,7 @@
 <div class="po-wrapper">
-  <po-toolbar p-title="Sistema de Gestão"></po-toolbar>
+  <po-toolbar p-title="Sistema de Gestão" *ngIf="!isLoginPage" [p-profile-actions]="profileActions"></po-toolbar>
 
-  <po-menu [p-menus]="menus"></po-menu>
+  <po-menu [p-menus]="filteredMenus" *ngIf="!isLoginPage"></po-menu>
 
   <router-outlet></router-outlet>
 </div>

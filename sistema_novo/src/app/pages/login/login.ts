@@ -13,8 +13,15 @@ export class Login {
   constructor(private router: Router, private poNotification: PoNotificationService) {}
 
   onLogin(formData: any) {
-    if (formData.login === 'admin' && formData.password === 'admin') {
+    const login = formData.login?.toLowerCase();
+    const password = formData.password;
+
+    console.log('Tentativa de login:', { login, password });
+
+    if (login === 'admin' && password === 'admin') {
       localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('userPermissions', JSON.stringify(['all']));
+      
       this.poNotification.success('Login efetuado com sucesso!');
       this.router.navigate(['/']);
     } else {

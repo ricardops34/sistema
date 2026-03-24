@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 import { PoMenuItem, PoMenuModule, PoPageModule, PoToolbarModule } from '@po-ui/ng-components';
 
@@ -10,7 +11,39 @@ import { PoMenuItem, PoMenuModule, PoPageModule, PoToolbarModule } from '@po-ui/
   templateUrl: './app.html',
   styleUrls: ['./app.css'],
 })
-export class App {
+export class App implements OnInit {
+  isLoginPage = false;
+
+  constructor(private router: Router) {}
+
+  ngOnInit() {
+    this.isLoginPage = this.router.url.includes('/login');
+
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      this.isLoginPage = event.url.includes('/login') || event.urlAfterRedirects.includes('/login');
+    });
+  }
+
+  get filteredMenus(): Array<PoMenuItem> {
+    const permissions = JSON.parse(localStorage.getItem('userPermissions') || '[]');
+    if (permissions.includes('all')) {
+      return this.menus;
+    }
+    return this.menus.filter(menu => permissions.includes(menu.label));
+  }
+
+  onLogout() {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userPermissions');
+    this.router.navigate(['/login']);
+  }
+
+  readonly profileActions: Array<any> = [
+    { label: 'Sair', action: () => this.onLogout(), icon: 'an an-sign-out' }
+  ];
+
   readonly menus: Array<PoMenuItem> = [
     {
       label: 'Cadastros básicos',
