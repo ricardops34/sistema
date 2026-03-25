@@ -78,5 +78,39 @@ export function mockInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
     ).pipe(delay(500));
   }
 
+  // Empresas
+  if (url.includes('/api/v1/empresas') && method === 'GET') {
+    return of(
+      new HttpResponse({
+        status: 200,
+        body: {
+          items: [
+            { id: 1, nome: 'RCG Consultoria', razao: 'RCG Servicos LTDA', responsalvel: 'Ricardo', cidadeNome: 'Curitiba', endereco: 'Rua das Flores, 100' },
+            { id: 2, nome: 'Posto Central', razao: 'Posto Central ME', responsalvel: 'Carlos', cidadeNome: 'São Paulo', endereco: 'Av. Paulista, 500' },
+            { id: 3, nome: 'Mercado Bom Preço', razao: 'Bom Preço Alimentos', responsalvel: 'Ana', cidadeNome: 'Rio de Janeiro', endereco: 'Rua Principal, 10' },
+          ],
+          hasNext: false,
+        },
+      })
+    ).pipe(delay(500));
+  }
+
+  // Contratos
+  if (url.includes('/api/v1/contratos') && method === 'GET') {
+    return of(
+      new HttpResponse({
+        status: 200,
+        body: {
+          items: [
+            { id: 1, empresaNome: 'RCG Consultoria', descricao: 'Conserto de Servidor', dt_inicio: '2025-01-01', dt_fim: '2025-12-31', tipo: 'F' },
+            { id: 2, empresaNome: 'Posto Central', descricao: 'Suporte Mensal', dt_inicio: '2025-02-01', dt_fim: '2025-02-28', tipo: 'H' },
+            { id: 3, empresaNome: 'Mercado Bom Preço', descricao: 'Instalação de Rede', dt_inicio: '2025-03-10', dt_fim: '2025-04-10', tipo: 'F' },
+          ],
+          hasNext: false,
+        },
+      })
+    ).pipe(delay(500));
+  }
+
   return next(req);
 }
