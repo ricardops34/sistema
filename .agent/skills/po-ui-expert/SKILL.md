@@ -27,12 +27,22 @@ Quando esta Skill for carregada, o agente deve seguir rigorosamente as regras de
 - Separe componentes de visualização (`Dumb`) de componentes de lógica de negócio (`Smart`).
 - Utilize **Reactive Forms** para formulários complexos que exigem validações customizadas.
 
-## 🔄 Fluxo de Migração (Legacy Code)
+## 🔄 Fluxo de Migração & Integração (Legacy/Protheus)
 
-Ao converter código de sistemas legados (como o Adianti PHP encontrado no projeto):
-1.  **Analise o SQL**: Identifique os campos e seus tipos.
+1.  **Analise o SQL**: Identifique os campos e seus tipos (ex: `A1_COD`).
 2.  **Mapeie para PO-UI**: Use o script `scripts/converter.py` para sugerir o componente ideal.
-3.  **Crie o Serviço**: Gere um serviço Angular que siga o padrão REST da TOTVS (com paginação e ordenação via query parameters).
+3.  **Crie o Serviço Protheus**: Gere serviços Angular integrando com `protheus-lib-core` para manter padrões de comunicação ADVPL.
+4.  **Acesse o MDI**: Use as bibliotecas Protheus para abrir rotinas externas e gerenciar o fechamento de abas.
+
+## 🎨 Estilização & Tema
+
+- **PoTheme**: Utilize o tema institucional TOTVS (`po-theme-default` ou `po-theme-protheus`).
+- **CSS Customization**: Prefira usar variáveis do Design System (`--po-color-*`) em vez de cores estáticas.
+- **Tokens de Espaçamento**: Utilize as classes utilitárias de margem e preenchimento (`po-m-1`, `po-p-2`, etc.) para manter a consistência visual.
 
 ---
-*Para mais detalhes de componentes específicos, consulte `references/components.md`.*
+*Para mais detalhes técnicos, consulte:*
+- [Componentes](file:///c:/Ricardo/Sistema/.agent/skills/po-ui-expert/references/components.md)
+- [Padrões Protheus](file:///c:/Ricardo/Sistema/.agent/skills/po-ui-expert/references/protheus.md)
+- [Design e Tema](file:///c:/Ricardo/Sistema/.agent/skills/po-ui-expert/references/theme.md)
+- [Regras de Design](file:///c:/Ricardo/Sistema/.agent/skills/po-ui-expert/references/rules.md)
