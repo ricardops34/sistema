@@ -2,33 +2,51 @@ version: '3.8'
 
 services:
   backend:
-    image: ricardops34/sistema-backend:latest
-    container_name: sistema-backend-prod
-    restart: always
-    environment:
-      # Host 'postgres_postgres' detectado na rede 'network_db' da VPS
-      DATABASE_URL: postgresql://sistema:Sistema%231245@postgres_postgres:5432/sistema?schema=public
-      PORT: 3000
+    image: ghcr.io/ricardops34/sistema-backend:latest
     networks:
       - network_db
       - network_public
+    environment:
+      DATABASE_URL: postgresql://sistema:Sistema%231245@postgres_postgres:5432/sistema?schema=public
+      PORT: 3000
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.swarm.network=network_public"
+        - "traefik.http.routers.sistema-api.rule=Host(`api.sistema.bjsoft.com.br`)"
+        - "traefik.http.routers.sistema-api.entrypoints=websecure"
+        - "traefik.http.routers.sistema-api.tls.certresolver=letsencryptresolver"
+        - "traefik.http.services.sistema-api.loadbalancer.server.port=3000"
 
   frontend:
-    image: ricardops34/sistema-frontend:latest
-    container_name: sistema-frontend-prod
-    restart: always
+    image: ghcr.io/ricardops34/sistema-frontend:latest
     networks:
       - network_public
-    labels:
-      - "traefik.enable=true"
-      # URL DEFINIDA: sistema.bjsoft.com.br
-      - "traefik.http.routers.sistema-fb.rule=Host(`sistema.bjsoft.com.br`)"
-      - "traefik.http.routers.sistema-fb.entrypoints=websecure"
-      - "traefik.http.routers.sistema-fb.tls.certresolver=letsencryptresolver" # Resolver detectado na VPS
-      - "traefik.http.services.sistema-fb.loadbalancer.server.port=80"
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.swarm.network=network_public"
+        - "traefik.http.routers.sistema-fe.rule=Host(`sistema.bjsoft.com.br`)"
+        - "traefik.http.routers.sistema-fe.entrypoints=websecure"
+        - "traefik.http.routers.sistema-fe.tls.certresolver=letsencryptresolver"
+        - "traefik.http.services.sistema-fe.loadbalancer.server.port=80"
+        - "traefik.http.middlewares.sistema-compress.compress=true"
+        - "traefik.http.routers.sistema-fe.middlewares=sistema-compress@swarm"
 
 networks:
   network_public:
     external: true
+    name: network_public
   network_db:
     external: true
+    name: network_db

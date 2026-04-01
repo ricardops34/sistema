@@ -1,17 +1,46 @@
-name: Deploy to VPS
+name: Deploy Sistema to VPS (GHCR)
 
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./sistema_backend
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/sistema-backend:latest
+
+      - name: Build and Push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./sistema_novo
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/sistema-frontend:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    steps:
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@master
         with:
@@ -19,7 +48,22 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            # Garante que a pasta existe e está atualizada (para o docker-compose.prod.yml)
+            mkdir -p /home/${{ secrets.VPS_USERNAME }}/sistema
             cd /home/${{ secrets.VPS_USERNAME }}/sistema
-            git pull origin main
-            docker compose -f docker-compose.prod.yml up -d --build
+            
+            # Se o git não estiver inicializado, fazemos o clone
+            if [ ! -d ".git" ]; then
+              git clone https://github.com/${{ github.repository }} .
+            else
+              git pull origin master
+            fi
+
+            # Login no GHCR na VPS (usando o PAT/Token se for privado ou apenas pull se for público)
+            # Para Swarm, é melhor baixar as imagens antes
+            docker pull ghcr.io/${{ github.repository_owner }}/sistema-backend:latest
+            docker pull ghcr.io/${{ github.repository_owner }}/sistema-frontend:latest
+
+            # Deploy da Stack no Swarm
+            docker stack deploy -c docker-compose.prod.yml sistema_bjsoft --with-registry-auth
             docker system prune -f
