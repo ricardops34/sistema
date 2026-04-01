@@ -30,6 +30,23 @@ export const routes: Routes = [
         path: 'feriados',
         loadComponent: () => import('./pages/cadastros/feriados/feriados').then((m) => m.Feriados),
       },
+      {
+        path: 'colaboradores',
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./pages/cadastros/colaboradores/colaboradores').then((m) => m.Colaboradores),
+          },
+          {
+            path: 'novo',
+            loadComponent: () => import('./pages/cadastros/colaboradores/colaboradores-edit').then((m) => m.ColaboradoresEdit),
+          },
+          {
+            path: 'editar/:id',
+            loadComponent: () => import('./pages/cadastros/colaboradores/colaboradores-edit').then((m) => m.ColaboradoresEdit),
+          }
+        ]
+      },
     ],
   },
   {
@@ -50,6 +67,15 @@ export const routes: Routes = [
           {
             path: 'contratos',
             loadComponent: () => import('./pages/servicos/cadastros/contratos/contratos').then((m) => m.Contratos),
+          }
+        ]
+      },
+      {
+        path: 'manutencao',
+        children: [
+          {
+            path: 'realizados',
+            loadComponent: () => import('./pages/servicos/manutencao/realizados/realizados').then((m) => m.Realizados),
           }
         ]
       }

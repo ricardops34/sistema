@@ -184,5 +184,43 @@ export function mockInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
     ).pipe(delay(500));
   }
 
+  // Colaboradores
+  if (url.includes('/api/v1/colaboradores') && method === 'GET') {
+    return of(
+      new HttpResponse({
+        status: 200,
+        body: {
+          items: [
+            { id: 1, nome: 'Alberto Santos', email: 'alberto@teste.com', matricula: 'COL001', status: 'A', telefone: '(41) 99999-0001' },
+            { id: 2, nome: 'Beatriz Silva', email: 'beatriz@teste.com', matricula: 'COL002', status: 'A', telefone: '(41) 99999-0002' },
+            { id: 3, nome: 'Claudio Duarte', email: 'claudio@teste.com', matricula: 'COL003', status: 'I', telefone: '(41) 99999-0003' },
+            { id: 4, nome: 'Daniela Souza', email: 'daniela@teste.com', matricula: 'COL004', status: 'A', telefone: '(41) 99999-0004' },
+            { id: 5, nome: 'Eduardo Lima', email: 'eduardo@teste.com', matricula: 'COL005', status: 'A', telefone: '(41) 99999-0005' },
+          ],
+          hasNext: false,
+        },
+      })
+    ).pipe(delay(500));
+  }
+
+  // Trabalhos Realizados (Apontamentos)
+  if (url.includes('/api/v1/realizados') && method === 'GET') {
+    return of(
+      new HttpResponse({
+        status: 200,
+        body: {
+          items: [
+            { id: 1, data_realizado: '2025-03-25', profissional_nome: 'Ricardo Silva', empresa_nome: 'RCG Consultoria', descricao: 'Ajuste de Servidor DNS', horas_total: 4, valor_total: 800, status: 'C' },
+            { id: 2, data_realizado: '2025-03-26', profissional_nome: 'João Souza', empresa_nome: 'Posto Central', descricao: 'Treinamento de Equipe', horas_total: 8, valor_total: 1200, status: 'C' },
+            { id: 3, data_realizado: '2025-03-26', profissional_nome: 'Ricardo Silva', empresa_nome: 'Mercado Bom Preço', descricao: 'Configuração de Rede', horas_total: 2, valor_total: 300, status: 'P' },
+            { id: 4, data_realizado: '2025-03-27', profissional_nome: 'Maria Oliveira', empresa_nome: 'Fazenda Verde', descricao: 'Instalação de Câmeras', horas_total: 6, valor_total: 1500, status: 'C' },
+            { id: 5, data_realizado: '2025-03-27', profissional_nome: 'João Souza', empresa_nome: 'RCG Consultoria', descricao: 'Manutenção Mensal', horas_total: 10, valor_total: 2000, status: 'P' },
+          ],
+          hasNext: false,
+        },
+      })
+    ).pipe(delay(500));
+  }
+
   return next(req);
 }
