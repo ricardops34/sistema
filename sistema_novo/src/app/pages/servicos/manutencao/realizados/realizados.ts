@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { PoPageDynamicTableModule, PoPageDynamicTableField } from '@po-ui/ng-templates';
+import { PoNotificationService } from '@po-ui/ng-components';
 
 @Component({
   selector: 'app-realizados',
@@ -10,11 +11,18 @@ import { PoPageDynamicTableModule, PoPageDynamicTableField } from '@po-ui/ng-tem
       p-title="Trabalhos Realizados"
       [p-fields]="fields"
       p-service-api="/api/v1/realizados"
+      [p-actions]="actions"
     >
     </po-page-dynamic-table>
   `
 })
 export class Realizados {
+  public readonly actions = {
+    table: [
+      { label: 'Imprimir PDF', action: this.printPDF.bind(this), icon: 'po-icon-print' }
+    ]
+  };
+
   readonly fields: Array<PoPageDynamicTableField> = [
     { property: 'id', key: true, label: 'ID', filter: true, width: '70px' },
     { property: 'data_realizado', label: 'Data', type: 'date', filter: true },
@@ -29,4 +37,11 @@ export class Realizados {
       { value: 'A', label: 'Cancelado', color: 'color-07' }
     ]}
   ];
+
+  constructor(private poNotification: PoNotificationService) {}
+
+  printPDF(item: any) {
+    this.poNotification.information(`Iniciando impressão do serviço ID: ${item.id}`);
+    window.open('/api/v1/relatorios/servicos?id=' + item.id, '_blank');
+  }
 }

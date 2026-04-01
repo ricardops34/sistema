@@ -1,4 +1,4 @@
-import { HttpEvent, HttpHandlerFn, HttpRequest, HttpResponse } from '@angular/common/http';
+import { HttpEvent, HttpHandlerFn, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
@@ -269,6 +269,20 @@ export function mockInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
           total_revenue: 42500,
           active_projects: 12
         }
+      })
+    ).pipe(delay(500));
+  }
+
+  // Relatórios (Mock de PDF)
+  if (url.includes('/api/v1/relatorios/servicos') && method === 'GET') {
+    return of(
+      new HttpResponse({
+        status: 200,
+        body: 'SIMULAÇÃO DE CONTEÚDO PDF - RELATÓRIO DE SERVIÇOS PRESTADOS',
+        headers: new HttpHeaders({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': 'attachment; filename="relatorio-servicos.pdf"'
+        })
       })
     ).pipe(delay(500));
   }
