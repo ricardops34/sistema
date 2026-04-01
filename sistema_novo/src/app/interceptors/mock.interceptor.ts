@@ -259,5 +259,19 @@ export function mockInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
     ).pipe(delay(500));
   }
 
+  // Dashboard (Resumos)
+  if (url.includes('/api/v1/dashboard/summaries') && method === 'GET') {
+    return of(
+      new HttpResponse({
+        status: 200,
+        body: {
+          total_hours: 168,
+          total_revenue: 42500,
+          active_projects: 12
+        }
+      })
+    ).pipe(delay(500));
+  }
+
   return next(req);
 }
