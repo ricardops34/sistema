@@ -222,5 +222,42 @@ export function mockInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
     ).pipe(delay(500));
   }
 
+  // Usuários (Admin)
+  if (url.includes('/api/v1/users') && method === 'GET') {
+    return of(
+      new HttpResponse({
+        status: 200,
+        body: {
+          items: [
+            { id: 1, login: 'admin', nome: 'Administrador do Sistema', email: 'admin@sistema.com', perfil: 'admin', status: 'A' },
+            { id: 2, login: 'ricardo', nome: 'Ricardo Silva', email: 'ricardo@sistema.com', perfil: 'admin', status: 'A' },
+            { id: 3, login: 'consultor', nome: 'João Consultor', email: 'consultor@sistema.com', perfil: 'user', status: 'A' },
+            { id: 4, login: 'gestor', nome: 'Maria Gestora', email: 'gestor@sistema.com', perfil: 'admin', status: 'A' },
+            { id: 5, login: 'visitante', nome: 'Visitante Teste', email: 'visitante@sistema.com', perfil: 'guest', status: 'I' },
+          ],
+          hasNext: false,
+        },
+      })
+    ).pipe(delay(500));
+  }
+
+  // Grupos (Admin)
+  if (url.includes('/api/v1/groups') && method === 'GET') {
+    return of(
+      new HttpResponse({
+        status: 200,
+        body: {
+          items: [
+            { id: 1, nome: 'Administradores', descricao: 'Acesso total ao sistema', status: 'A' },
+            { id: 2, nome: 'Consultores', descricao: 'Acesso às telas de serviço e agendamento', status: 'A' },
+            { id: 3, nome: 'RH', descricao: 'Acesso ao cadastro de colaboradores', status: 'A' },
+            { id: 4, nome: 'Inativos', descricao: 'Grupo sem permissões', status: 'I' },
+          ],
+          hasNext: false,
+        },
+      })
+    ).pipe(delay(500));
+  }
+
   return next(req);
 }

@@ -82,6 +82,46 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'admin',
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'usuarios',
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./pages/admin/usuarios/usuarios').then((m) => m.Usuarios),
+          },
+          {
+            path: 'novo',
+            loadComponent: () => import('./pages/admin/usuarios/usuarios-edit').then((m) => m.UsuariosEdit),
+          },
+          {
+            path: 'editar/:id',
+            loadComponent: () => import('./pages/admin/usuarios/usuarios-edit').then((m) => m.UsuariosEdit),
+          }
+        ]
+      },
+      {
+        path: 'grupos',
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./pages/admin/grupos/grupos').then((m) => m.Grupos),
+          },
+          {
+            path: 'novo',
+            loadComponent: () => import('./pages/admin/grupos/grupos-edit').then((m) => m.GruposEdit),
+          },
+          {
+            path: 'editar/:id',
+            loadComponent: () => import('./pages/admin/grupos/grupos-edit').then((m) => m.GruposEdit),
+          }
+        ]
+      }
+    ]
+  },
+  {
     path: 'login',
     loadComponent: () => import('./pages/login/login').then((m) => m.Login),
   },

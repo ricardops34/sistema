@@ -23,9 +23,16 @@ export class AuthService {
   }
 
   login(user: string, pass: string): boolean {
-    if (user === 'admin' && pass === 'admin') {
+    const users: any = {
+      admin: { pass: 'admin', profile: 'admin', permissions: ['all'] },
+      consultor: { pass: 'consultor', profile: 'user', permissions: ['read:all'] },
+      gestor: { pass: 'gestor', profile: 'admin', permissions: ['read:all', 'write:all'] }
+    };
+
+    if (users[user] && users[user].pass === pass) {
       localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('userPermissions', JSON.stringify(['all']));
+      localStorage.setItem('userProfile', users[user].profile);
+      localStorage.setItem('userPermissions', JSON.stringify(users[user].permissions));
       this.authenticated.next(true);
       return true;
     }
@@ -34,6 +41,7 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userProfile');
     localStorage.removeItem('userPermissions');
     this.authenticated.next(false);
     this.router.navigate(['/login']);
