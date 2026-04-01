@@ -1,0 +1,72 @@
+// Prisma Schema para Migração do Sistema FB
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Mapeamento Usuários
+model User {
+  id        Int      @id @default(autoincrement())
+  login     String   @unique
+  password  String
+  name      String
+  email     String?
+  profile   String   @default("user")
+  status    String   @default("A") // A: Ativo, I: Inativo
+  createdAt DateTime @default(now())
+}
+
+// Mapeamento Empresas (Clientes)
+model Company {
+  id          Int      @id @default(autoincrement())
+  name        String
+  legalName   String?
+  responsible String?
+  city        String?
+  address     String?
+  status      String   @default("A")
+  appointments Appointment[]
+}
+
+// Mapeamento Profissionais (Colaboradores)
+model Professional {
+  id           Int      @id @default(autoincrement())
+  name         String
+  systemUser   String?
+  status       String   @default("A")
+  appointments Appointment[]
+}
+
+// Mapeamento Agendamentos / Apontamentos
+model Appointment {
+  id             Int          @id @default(autoincrement())
+  description    String
+  initialTime    DateTime
+  finalTime      DateTime
+  totalHours     String?
+  type           String       @default("A") // A: Apontamento, P: Programado
+  status         String       @default("P") // P: Pendente, C: Confirmado
+  color          String?
+  notes          String?      @db.Text
+  
+  companyId      Int
+  company        Company      @relation(fields: [companyId], references: [id])
+  
+  professionalId Int
+  professional   Professional @relation(fields: [professionalId], references: [id])
+  
+  date           DateTime     @db.Date
+}
+
+// Mapeamento Feriados
+model Holiday {
+  id          Int      @id @default(autoincrement())
+  date        DateTime @db.Date
+  description String
+  type        String   @default("N") // N: Nacional, R: Regional
+}
