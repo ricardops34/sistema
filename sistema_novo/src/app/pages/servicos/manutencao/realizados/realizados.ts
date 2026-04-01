@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PoPageDynamicTableModule, PoPageDynamicTableField } from '@po-ui/ng-templates';
+import { PoPageDynamicTableModule, PoPageDynamicTableField, PoPageDynamicTableCustomTableAction } from '@po-ui/ng-templates';
 import { PoNotificationService } from '@po-ui/ng-components';
 
 @Component({
@@ -11,17 +11,15 @@ import { PoNotificationService } from '@po-ui/ng-components';
       p-title="Trabalhos Realizados"
       [p-fields]="fields"
       p-service-api="/api/v1/realizados"
-      [p-actions]="actions"
+      [p-table-custom-actions]="tableCustomActions"
     >
     </po-page-dynamic-table>
   `
 })
 export class Realizados {
-  public readonly actions = {
-    customActions: [
-      { label: 'Imprimir PDF', action: this.printPDF.bind(this), icon: 'po-icon-print' }
-    ]
-  };
+  public readonly tableCustomActions: Array<PoPageDynamicTableCustomTableAction> = [
+    { label: 'Imprimir PDF', action: this.printPDF.bind(this), icon: 'po-icon-print' }
+  ];
 
   readonly fields: Array<PoPageDynamicTableField> = [
     { property: 'id', key: true, label: 'ID', filter: true, width: '70px' },
