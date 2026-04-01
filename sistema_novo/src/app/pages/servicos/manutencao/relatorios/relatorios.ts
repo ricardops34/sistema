@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PoPageDynamicSearchModule } from '@po-ui/ng-templates';
-import { PoBreadcrumb, PoNotificationService, PoModule } from '@po-ui/ng-components';
+import { PoPageDynamicSearchComponent } from '@po-ui/ng-templates';
+import { PoBreadcrumb, PoNotificationService } from '@po-ui/ng-components';
 
 @Component({
     selector: 'app-relatorios',
     standalone: true,
-    imports: [CommonModule, PoPageDynamicSearchModule, PoModule],
+    imports: [CommonModule, PoPageDynamicSearchComponent],
     template: `
         <po-page-dynamic-search
               p-title="Central de Relatorios"
@@ -17,34 +17,26 @@ import { PoBreadcrumb, PoNotificationService, PoModule } from '@po-ui/ng-compone
                                           >
                                                 <div class="po-row">
                                                         <div class="po-md-12 po-mt-2">
-                                                                  <p class="po-font-text">Selecione filtros e clique em "Pesquisa Avancada".</p>
+                                                                  <p class="po-font-text">Selecione filtros.</p>
                                                                           </div>
                                                                                 </div>
                                                                                     </po-page-dynamic-search>
                                                                                       `
 })
   export class Relatorios {
-    public readonly breadcrumb: PoBreadcrumb = {
+    public breadcrumb: PoBreadcrumb = {
           items: [
             { label: 'Home', link: '/' },
-            { label: 'Servicos', link: '/servicos' },
             { label: 'Relatorios' }
                 ]
     };
 
-  public readonly fields: Array<any> = [
-    { property: 'data_inicio', label: 'Data Inicio', type: 'date', gridColumns: 6 },
-    { property: 'data_fim', label: 'Data Fim', type: 'date', gridColumns: 6 },
-    { property: 'empresa', label: 'Empresa', gridColumns: 12 }
+  public fields: Array<any> = [
+    { property: 'f', label: 'Filtro' }
       ];
 
   constructor(private poNotification: PoNotificationService) {}
 
-  onQuickSearch(filter: string) {
-        this.poNotification.information(`Pesquisa: ${filter}`);
-  }
-
-  onAdvancedSearch(filter: any) {
-        this.poNotification.success(`Pesquisa avancada realizada!`);
-  }
+  onQuickSearch(f: string) {}
+    onAdvancedSearch(f: any) {}
 }
