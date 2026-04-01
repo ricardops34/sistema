@@ -18,7 +18,7 @@ import { PoNotificationService } from '@po-ui/ng-components';
 })
 export class Realizados {
   public readonly actions = {
-    table: [
+    customActions: [
       { label: 'Imprimir PDF', action: this.printPDF.bind(this), icon: 'po-icon-print' }
     ]
   };

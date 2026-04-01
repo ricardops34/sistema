@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PoPageDynamicSearchComponent } from '@po-ui/ng-templates';
+import { PoPageDynamicSearchModule, PoPageDynamicTableField } from '@po-ui/ng-templates';
 import { PoBreadcrumb, PoNotificationService } from '@po-ui/ng-components';
 
 @Component({
     selector: 'app-relatorios',
     standalone: true,
-    imports: [CommonModule, PoPageDynamicSearchComponent],
+    imports: [CommonModule, PoPageDynamicSearchModule],
     template: `
         <po-page-dynamic-search
               p-title="Central de Relatorios"
