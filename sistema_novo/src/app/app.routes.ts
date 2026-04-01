@@ -26,12 +26,24 @@ export const routes: Routes = [
         path: 'funcoes',
         loadComponent: () => import('./pages/cadastros/funcoes/funcoes').then((m) => m.Funcoes),
       },
+      {
+        path: 'feriados',
+        loadComponent: () => import('./pages/cadastros/feriados/feriados').then((m) => m.Feriados),
+      },
     ],
   },
   {
     path: 'servicos',
     canActivate: [authGuard],
     children: [
+      {
+        path: 'calendario',
+        loadComponent: () => import('./pages/servicos/calendario/calendario').then((m) => m.Calendario),
+      },
+      {
+        path: 'agendamentos',
+        loadComponent: () => import('./pages/servicos/agendamentos/agendamentos').then((m) => m.Agendamentos),
+      },
       {
         path: 'cadastros',
         children: [

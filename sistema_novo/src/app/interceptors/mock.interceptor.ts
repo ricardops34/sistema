@@ -112,5 +112,77 @@ export function mockInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
     ).pipe(delay(500));
   }
 
+  // Agendamentos
+  if (url.includes('/api/v1/agendamentos') && method === 'GET') {
+    return of(
+      new HttpResponse({
+        status: 200,
+        body: {
+          items: [
+            {
+              id: 1,
+              data_agenda: '2025-03-26',
+              tipo: 'P',
+              descricao: 'Visita Técnica RCG',
+              contrato_nome: 'Conserto de Servidor',
+              profissional_nome: 'Ricardo Silva',
+              hora_total: '04:00',
+              horario_inicial: '2025-03-26T09:00:00',
+              horario_final: '2025-03-26T13:00:00',
+              cor: '#4CAF50'
+            },
+            {
+              id: 2,
+              data_agenda: '2025-03-27',
+              tipo: 'R',
+              descricao: 'Suporte Remoto Posto',
+              contrato_nome: 'Suporte Mensal',
+              profissional_nome: 'João Souza',
+              hora_total: '02:00',
+              horario_inicial: '2025-03-27T14:00:00',
+              horario_final: '2025-03-27T16:00:00',
+              cor: '#3a87ad'
+            },
+            {
+              id: 3,
+              data_agenda: '2025-03-28',
+              tipo: 'A',
+              descricao: 'Reunião de Alinhamento',
+              contrato_nome: 'Consultoria',
+              profissional_nome: 'Ricardo Silva',
+              hora_total: '01:00',
+              horario_inicial: '2025-03-28T10:00:00',
+              horario_final: '2025-03-28T11:00:00',
+              cor: '#FFC107'
+            }
+          ],
+          hasNext: false,
+        },
+      })
+    ).pipe(delay(500));
+  }
+
+  // Feriados
+  if (url.includes('/api/v1/feriados') && method === 'GET') {
+    return of(
+      new HttpResponse({
+        status: 200,
+        body: {
+          items: [
+            { id: 1, data_feriado: '2025-01-01', descricao: 'Ano Novo', tipo: 'N' },
+            { id: 2, data_feriado: '2025-04-21', descricao: 'Tiradentes', tipo: 'N' },
+            { id: 3, data_feriado: '2025-05-01', descricao: 'Dia do Trabalho', tipo: 'N' },
+            { id: 4, data_feriado: '2025-09-07', descricao: 'Independência', tipo: 'N' },
+            { id: 5, data_feriado: '2025-10-12', descricao: 'Nossa Aparecida', tipo: 'N' },
+            { id: 6, data_feriado: '2025-11-02', descricao: 'Finados', tipo: 'N' },
+            { id: 7, data_feriado: '2025-11-15', descricao: 'República', tipo: 'N' },
+            { id: 8, data_feriado: '2025-12-25', descricao: 'Natal', tipo: 'N' },
+          ],
+          hasNext: false,
+        },
+      })
+    ).pipe(delay(500));
+  }
+
   return next(req);
 }
