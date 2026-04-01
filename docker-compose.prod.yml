@@ -1,0 +1,47 @@
+services:
+  database:
+    image: postgres:16-alpine
+    container_name: sistema-db-prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-mysecretpassword}
+      POSTGRES_DB: ${DB_NAME:-sistema_fb}
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    networks:
+      - sistema-network
+
+  backend:
+    build:
+      context: ./sistema_backend
+      dockerfile: Dockerfile
+    container_name: sistema-backend-prod
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-mysecretpassword}@database:5432/${DB_NAME:-sistema_fb}?schema=public
+      PORT: 3000
+    depends_on:
+      - database
+    networks:
+      - sistema-network
+
+  frontend:
+    build:
+      context: ./sistema_novo
+      dockerfile: Dockerfile
+    container_name: sistema-frontend-prod
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - sistema-network
+
+networks:
+  sistema-network:
+    driver: bridge
+
+volumes:
+  postgres_prod_data:
