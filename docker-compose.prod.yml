@@ -3,15 +3,20 @@ version: '3.8'
 services:
   backend:
     image: ghcr.io/ricardops34/sistema-backend:latest
+    build:
+      context: ./sistema_backend
+      dockerfile: Dockerfile
     networks:
       - network_db
       - network_public
     environment:
-      DATABASE_URL: postgresql://sistema:Sistema%231245@postgres_postgres:5432/sistema?schema=public
+      DATABASE_URL: postgresql://sistema:Sistema124578@postgres_postgres:5432/sistema?schema=public
       PORT: 3000
     deploy:
       mode: replicated
       replicas: 1
+      restart_policy:
+        condition: on-failure
       placement:
         constraints:
           - node.role == manager
@@ -25,11 +30,16 @@ services:
 
   frontend:
     image: ghcr.io/ricardops34/sistema-frontend:latest
+    build:
+      context: ./sistema_novo
+      dockerfile: Dockerfile
     networks:
       - network_public
     deploy:
       mode: replicated
       replicas: 1
+      restart_policy:
+        condition: on-failure
       placement:
         constraints:
           - node.role == manager
