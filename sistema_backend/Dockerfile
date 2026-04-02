@@ -34,4 +34,4 @@ COPY --from=builder /app/prisma ./prisma
 EXPOSE 3000
 
 # Comando para rodar a aplicação
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]
