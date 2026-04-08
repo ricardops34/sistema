@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
+  private apiUrl = 'http://localhost:3000/v1/auth';
   private authenticated = new BehaviorSubject<boolean>(this.hasToken());
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private http: HttpClient) {}
 
   private hasToken(): boolean {
-    return localStorage.getItem('isAuthenticated') === 'true' || localStorage.getItem('isLoggedIn') === 'true';
+    return !!localStorage.getItem('access_token');
   }
 
   get isAuthenticated() {
@@ -22,28 +24,26 @@ export class AuthService {
     return this.authenticated.value;
   }
 
-  login(user: string, pass: string): boolean {
-    const users: any = {
-      admin: { pass: 'admin', profile: 'admin', permissions: ['all'] },
-      consultor: { pass: 'consultor', profile: 'user', permissions: ['read:all'] },
-      gestor: { pass: 'gestor', profile: 'admin', permissions: ['read:all', 'write:all'] }
-    };
-
-    if (users[user] && users[user].pass === pass) {
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('userProfile', users[user].profile);
-      localStorage.setItem('userPermissions', JSON.stringify(users[user].permissions));
-      this.authenticated.next(true);
-      return true;
-    }
-    return false;
+  login(login: string, password: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/login`, { login, password }).pipe(
+      tap((res) => {
+        localStorage.setItem('access_token', res.access_token);
+        localStorage.setItem('userProfile', res.user.profile);
+        localStorage.setItem('userName', res.user.name);
+        this.authenticated.next(true);
+      })
+    );
   }
 
   logout() {
-    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('access_token');
     localStorage.removeItem('userProfile');
-    localStorage.removeItem('userPermissions');
+    localStorage.removeItem('userName');
     this.authenticated.next(false);
     this.router.navigate(['/login']);
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('access_token');
   }
 }

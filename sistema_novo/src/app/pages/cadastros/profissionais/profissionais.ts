@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PoPageDynamicTableModule, PoPageDynamicTableField } from '@po-ui/ng-templates';
+import { PoPageDynamicTableModule, PoPageDynamicTableField, PoPageDynamicTableActions } from '@po-ui/ng-templates';
 import { PoBreadcrumb } from '@po-ui/ng-components';
 
 @Component({
@@ -13,9 +13,16 @@ export class Profissionais {
     items: [{ label: 'Home', link: '/' }, { label: 'Cadastros' }, { label: 'Profissionais' }],
   };
 
+  readonly actions: PoPageDynamicTableActions = {
+    new: '/cadastros/profissionais/novo',
+    detail: '/cadastros/profissionais/visualizar/:id',
+    edit: '/cadastros/profissionais/editar/:id',
+    remove: true
+  };
+
   readonly fields: Array<PoPageDynamicTableField> = [
     { property: 'id', key: true, label: 'Id', filter: true, width: '10%' },
-    { property: 'nome', label: 'Nome', filter: true },
-    { property: 'usuarioSistema', label: 'Usuário do Sistema', filter: true },
+    { property: 'name', label: 'Nome', filter: true },
+    { property: 'systemUser', label: 'Usuário do Sistema', filter: true },
   ];
 }

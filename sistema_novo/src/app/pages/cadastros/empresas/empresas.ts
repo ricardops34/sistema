@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { PoPageDynamicTableModule } from '@po-ui/ng-templates';
+import { PoPageDynamicTableModule, PoPageDynamicTableField, PoPageDynamicTableActions } from '@po-ui/ng-templates';
 
 @Component({
   selector: 'app-empresas',
@@ -8,18 +8,27 @@ import { PoPageDynamicTableModule } from '@po-ui/ng-templates';
     <po-page-dynamic-table
       p-title="Listagem de Empresas"
       [p-fields]="fields"
-      p-service-api="/api/v1/empresas"
+      [p-actions]="actions"
+      p-service-api="http://localhost:3000/v1/companies"
     >
     </po-page-dynamic-table>
   `
 })
 export class Empresas {
-  readonly fields = [
+  readonly actions: PoPageDynamicTableActions = {
+    new: '/cadastros/empresas/novo',
+    detail: '/cadastros/empresas/visualizar/:id',
+    edit: '/cadastros/empresas/editar/:id',
+    remove: true
+  };
+
+  readonly fields: Array<PoPageDynamicTableField> = [
     { property: 'id', key: true, label: 'Id', filter: true, width: '70px' },
-    { property: 'nome', label: 'Nome', filter: true },
-    { property: 'razao', label: 'Razão Social' },
-    { property: 'responsalvel', label: 'Responsável' },
-    { property: 'cidadeNome', label: 'Cidade' },
-    { property: 'endereco', label: 'Endereço' }
+    { property: 'name', label: 'Nome', filter: true },
+    { property: 'legalName', label: 'Razão Social' },
+    { property: 'color', label: 'Cor', width: '80px' },
+    { property: 'stateName', label: 'UF', width: '60px' },
+    { property: 'cityName', label: 'Cidade' },
+    { property: 'responsible', label: 'Responsável' }
   ];
 }

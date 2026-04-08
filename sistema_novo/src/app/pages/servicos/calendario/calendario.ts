@@ -67,7 +67,7 @@ export class Calendario implements OnInit {
       day: 'Dia'
     },
     events: (info: any, successCallback: any, failureCallback: any) => {
-      this.http.get<any>('/api/v1/agendamentos').subscribe({
+      this.http.get<any>('http://localhost:3000/v1/agendamentos').subscribe({
         next: (res) => {
           const events = res.items.map((item: any) => ({
             id: item.id,

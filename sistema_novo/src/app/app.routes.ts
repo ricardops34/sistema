@@ -16,11 +16,45 @@ export const routes: Routes = [
       },
       {
         path: 'empresas',
-        loadComponent: () => import('./pages/cadastros/empresas/empresas').then((m) => m.Empresas),
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./pages/cadastros/empresas/empresas').then((m) => m.Empresas),
+          },
+          {
+            path: 'novo',
+            loadComponent: () => import('./pages/cadastros/empresas/empresas-edit').then((m) => m.EmpresasEdit),
+          },
+          {
+            path: 'editar/:id',
+            loadComponent: () => import('./pages/cadastros/empresas/empresas-edit').then((m) => m.EmpresasEdit),
+          },
+          {
+            path: 'visualizar/:id',
+            loadComponent: () => import('./pages/cadastros/empresas/empresas-detail').then((m) => m.EmpresasDetail),
+          }
+        ]
       },
       {
         path: 'profissionais',
-        loadComponent: () => import('./pages/cadastros/profissionais/profissionais').then((m) => m.Profissionais),
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./pages/cadastros/profissionais/profissionais').then((m) => m.Profissionais),
+          },
+          {
+            path: 'novo',
+            loadComponent: () => import('./pages/cadastros/profissionais/profissionais-edit').then((m) => m.ProfissionaisEdit),
+          },
+          {
+            path: 'editar/:id',
+            loadComponent: () => import('./pages/cadastros/profissionais/profissionais-edit').then((m) => m.ProfissionaisEdit),
+          },
+          {
+            path: 'visualizar/:id',
+            loadComponent: () => import('./pages/cadastros/profissionais/profissionais-detail').then((m) => m.ProfissionaisDetail),
+          }
+        ]
       },
       {
         path: 'funcoes',
@@ -43,6 +77,10 @@ export const routes: Routes = [
           },
           {
             path: 'editar/:id',
+            loadComponent: () => import('./pages/cadastros/colaboradores/colaboradores-edit').then((m) => m.ColaboradoresEdit),
+          },
+          {
+            path: 'visualizar/:id',
             loadComponent: () => import('./pages/cadastros/colaboradores/colaboradores-edit').then((m) => m.ColaboradoresEdit),
           }
         ]

@@ -19,11 +19,18 @@ export class Login {
 
     console.log('Tentativa de login:', { login, password });
 
-    if (this.authService.login(login, password)) {
-      this.poNotification.success('Login efetuado com sucesso!');
-      this.router.navigate(['/cadastros/profissionais']);
-    } else {
-      this.poNotification.error('Usuário ou senha inválidos!');
-    }
+    this.authService.login(login, password).subscribe({
+      next: () => {
+        this.poNotification.success('Login efetuado com sucesso!');
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        console.error('Erro no login:', err);
+        const errorMsg = err.status === 0 
+          ? 'Não foi possível conectar ao servidor. Verifique se o backend está rodando.' 
+          : (err.error?.message || 'Usuário ou senha inválidos!');
+        this.poNotification.error(errorMsg);
+      }
+    });
   }
 }

@@ -27,10 +27,15 @@ model Company {
   name        String
   legalName   String?
   responsible String?
-  city        String?
+  color       String?
+  stateId     Int?
+  state       State?   @relation(fields: [stateId], references: [id])
+  cityId      Int?
+  city        City?    @relation(fields: [cityId], references: [id])
   address     String?
   status      String   @default("A")
   appointments Appointment[]
+  collaborators CompanyCollaborator[]
 }
 
 // Mapeamento Profissionais (Colaboradores)
@@ -69,4 +74,54 @@ model Holiday {
   date        DateTime @db.Date
   description String
   type        String   @default("N") // N: Nacional, R: Regional
+}
+
+// Mapeamento Estados
+model State {
+  id     Int      @id @default(autoincrement())
+  name   String
+  uf     String   @unique
+  cities City[]
+  companies Company[]
+}
+
+// Mapeamento Cidades
+model City {
+  id      Int      @id @default(autoincrement())
+  name    String
+  stateId Int
+  state   State    @relation(fields: [stateId], references: [id])
+  companies Company[]
+}
+
+// Mapeamento Funções
+model Role {
+  id            Int             @id @default(autoincrement())
+  name          String          @unique
+  status        String          @default("A")
+  collaborators Collaborator[]
+}
+
+// Mapeamento Colaboradores
+model Collaborator {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String?
+  phone     String?
+  whatsapp  Boolean  @default(false)
+  roleId    Int?
+  role      Role?    @relation(fields: [roleId], references: [id])
+  status    String   @default("A")
+  companies CompanyCollaborator[]
+}
+
+// Vínculo Empresa <-> Colaborador (N:N)
+model CompanyCollaborator {
+  id             Int          @id @default(autoincrement())
+  companyId      Int
+  company        Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  collaboratorId Int
+  collaborator   Collaborator @relation(fields: [collaboratorId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, collaboratorId])
 }

@@ -7,6 +7,8 @@ import { PoHttpRequestModule } from '@po-ui/ng-components';
 import { routes } from './app.routes';
 import { mockInterceptor } from './interceptors/mock.interceptor';
 
+import { tokenInterceptor } from './interceptors/token.interceptor';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -14,6 +16,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     importProvidersFrom([PoHttpRequestModule]),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideHttpClient(withInterceptors([mockInterceptor])),
+    provideHttpClient(withInterceptors([tokenInterceptor])),
   ]
 };
