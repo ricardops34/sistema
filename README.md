@@ -1,47 +1,58 @@
-# Arquivos de Instruções para Agentes
+# Multitenant Platform
 
-Esta pasta contém **arquivos de instruções globais** que orientam assistentes de IA ao trabalhar em workspaces de **TOTVS Protheus ERP** (AdvPL/TLPP). Os arquivos definem convenções de linguagem, estrutura de projeto, padrões de código, type system e referenciam o catálogo de skills disponíveis em [`../skills/advpl-tlpp/`](../skills/advpl-tlpp/).
+Monorepo do MVP da plataforma SaaS multi-tenant com autenticação, onboarding, administração de tenant e cadastro de pessoas.
 
----
+## Arquitetura
 
-## Arquivos
+- **`apps/api`** — API NestJS (TypeORM + PostgreSQL, JWT, refresh token rotativo)
+- **`apps/backoffice`** — Backoffice Angular 17 com PO-UI
+- **`apps/portal`** — Portal externo Angular 17 com PO-UI
+- **`packages/contracts`** — Contratos e DTOs compartilhados
+- **`packages/shared`** — Utilitários compartilhados
 
-| Arquivo | Destinatário | Descrição |
-|---------|--------------|-----------|
-| [AGENTS.md](AGENTS.md) | Agentes genéricos (GitHub Copilot, Codex, Cursor, etc. que seguem o padrão `AGENTS.md`) | Diretrizes de desenvolvimento AdvPL/TLPP para o ecossistema Protheus. |
-| [CLAUDE.md](CLAUDE.md) | Claude Code e variantes que seguem o padrão `CLAUDE.md` | Mesmo conteúdo de `AGENTS.md`, replicado para compatibilidade com agentes que esperam o nome `CLAUDE.md`. |
+## Setup Rápido
 
-> Atualmente os dois arquivos são **idênticos** — mantenha-os sincronizados ao editar.
+```bash
+# 1. Instalar dependências
+pnpm install
 
----
+# 2. Subir PostgreSQL
+docker compose up -d
 
-## Conteúdo Coberto
+# 3. Rodar migrations
+pnpm --filter api migration:run
 
-Ambos os arquivos abrangem:
+# 4. Iniciar API
+pnpm dev:api
 
-- **Linguagem e Ecossistema** — AdvPL (`.prw`, `.prg`, `.prx`), TLPP (`.tlpp`) e testes Python TIR. Idioma padrão de interação: **Português do Brasil**.
-- **Estrutura de Projeto** — Layout de `Fontes_Doc/`, `Testes/Automação Protheus/` e `.agents/skills/`.
-- **Convenções de Código** — Notação Húngara obrigatória, nomes de fontes (prefixo de 4 chars + 3 dígitos), nomes de tabelas/campos e constantes multilíngue (`STR0001`–`STR9999`).
-- **Type System** — Tipos AdvPL (C, M, N, L, D, F, A, B, U, O) e tipos TLPP (`numeric`, `integer`, `double`, `decimal`, `character`, `logical`, `date`, `array`, `object`, `json`, `codeblock`, `variant`, `variadic`) com sintaxe de declaração e principais diferenças entre as linguagens.
-- **Catálogo de Skills** — Índice das skills disponíveis em [`../skills/advpl-tlpp/`](../skills/advpl-tlpp/) para geração de código, migração, revisão, testes, documentação e planejamento.
+# 5. Criar primeiro tenant
+curl -X POST http://localhost:3000/onboarding/tenants \
+  -H "Content-Type: application/json" \
+  -d '{"slug":"demo","displayName":"Demo","adminEmail":"admin@demo.local","adminPassword":"Mudar@123"}'
+```
 
----
+Ver [docs/runbooks/local-setup.md](docs/runbooks/local-setup.md) para setup completo.
 
-## Como Usar
+## Testes
 
-Copie ou referencie o arquivo apropriado para a raiz do seu workspace Protheus de acordo com o agente utilizado:
+```bash
+pnpm --filter api test:e2e
+```
 
-- **GitHub Copilot / Codex / Cursor / outros agentes com padrão `AGENTS.md`** → usar [AGENTS.md](AGENTS.md)
-- **Claude Code** → usar [CLAUDE.md](CLAUDE.md)
+15 testes e2e cobrindo: health, database, auth, tenant context, onboarding, people-metadata, people CRUD, duplicate check, portal update requests, e auditoria.
 
-Os agentes carregam automaticamente esses arquivos como contexto inicial ao iniciar uma sessão, garantindo aderência às convenções TOTVS desde a primeira interação.
+## Documentação
 
----
+- [Setup local](docs/runbooks/local-setup.md)
+- [Endpoints de pessoas](docs/api/people-endpoints.md)
 
-## Manutenção
+## Critérios de aceite implementados
 
-Ao alterar regras de codificação, type system ou estrutura de projeto:
-
-1. Edite **ambos** os arquivos (`AGENTS.md` e `CLAUDE.md`) para mantê-los em sincronia.
-2. Verifique a equivalência com `diff instructions/AGENTS.md instructions/CLAUDE.md` — o comando deve retornar vazio.
-3. Atualize as referências ao catálogo de skills em [`../skills/advpl-tlpp/references/advpl-tlpp-skills-reference.md`](../skills/advpl-tlpp/references/advpl-tlpp-skills-reference.md) quando novas skills forem adicionadas.
+- ✅ Criar tenant por onboarding com administrador inicial
+- ✅ Login com sessão JWT e refresh rotativo
+- ✅ Resolver tenant ativo e papéis por request
+- ✅ Configurar política do cadastro de pessoas por tenant
+- ✅ Criar e listar pessoas com `internal_code` automático
+- ✅ Detectar duplicidade conforme política do tenant (alert/block)
+- ✅ Permitir solicitação externa de atualização cadastral
+- ✅ Auditar eventos principais do fluxo

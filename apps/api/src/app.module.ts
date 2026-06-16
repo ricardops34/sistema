@@ -9,6 +9,7 @@ import { PeopleModule } from './people/people.module';
 import { OnboardingModule } from './onboarding/onboarding.module';
 import { PeopleMetadataModule } from './people-metadata/people-metadata.module';
 import { PeopleRequestsModule } from './people-requests/people-requests.module';
+import { AuditModule } from './audit/audit.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { PeopleRequestsModule } from './people-requests/people-requests.module';
     OnboardingModule,
     PeopleMetadataModule,
     PeopleRequestsModule,
+    AuditModule,
   ],
   controllers: [HealthController],
 })
