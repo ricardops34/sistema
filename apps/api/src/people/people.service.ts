@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { Person } from './entities/person.entity';
 import { CreatePersonDto } from './dto/create-person.dto';
+import { DuplicateCheckService } from './duplicate-check.service';
 
 @Injectable()
 export class PeopleService {
@@ -10,9 +11,12 @@ export class PeopleService {
     @InjectRepository(Person)
     private personRepo: Repository<Person>,
     private dataSource: DataSource,
+    private duplicateCheckService: DuplicateCheckService,
   ) {}
 
   async create(tenantId: string, dto: CreatePersonDto, createdBy: string) {
+    await this.duplicateCheckService.check(tenantId, dto.nameLegal);
+
     const internalCode = await this.generateInternalCode(tenantId);
 
     const person = this.personRepo.create({

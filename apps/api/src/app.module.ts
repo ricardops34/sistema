@@ -8,6 +8,7 @@ import { TenancyModule } from './tenancy/tenancy.module';
 import { PeopleModule } from './people/people.module';
 import { OnboardingModule } from './onboarding/onboarding.module';
 import { PeopleMetadataModule } from './people-metadata/people-metadata.module';
+import { PeopleRequestsModule } from './people-requests/people-requests.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PeopleMetadataModule } from './people-metadata/people-metadata.module';
     PeopleModule,
     OnboardingModule,
     PeopleMetadataModule,
+    PeopleRequestsModule,
   ],
   controllers: [HealthController],
 })

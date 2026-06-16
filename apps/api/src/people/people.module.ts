@@ -6,14 +6,17 @@ import { Person } from './entities/person.entity';
 import { PersonContact } from './entities/person-contact.entity';
 import { PersonDocument } from './entities/person-document.entity';
 import { TenancyModule } from '../tenancy/tenancy.module';
+import { DuplicateCheckService } from './duplicate-check.service';
+import { PersonContextCode } from './entities/person-context-code.entity';
+import { TenantPersonPolicy } from '../tenant-settings/entities/tenant-person-policy.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Person, PersonContact, PersonDocument]),
+    TypeOrmModule.forFeature([Person, PersonContact, PersonDocument, PersonContextCode, TenantPersonPolicy]),
     TenancyModule,
   ],
   controllers: [PeopleController],
-  providers: [PeopleService],
-  exports: [PeopleService],
+  providers: [PeopleService, DuplicateCheckService],
+  exports: [PeopleService, DuplicateCheckService],
 })
 export class PeopleModule {}
