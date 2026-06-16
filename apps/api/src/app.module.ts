@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { TenancyModule } from './tenancy/tenancy.module';
 import { PeopleModule } from './people/people.module';
 import { OnboardingModule } from './onboarding/onboarding.module';
+import { PeopleMetadataModule } from './people-metadata/people-metadata.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { OnboardingModule } from './onboarding/onboarding.module';
     TenancyModule,
     PeopleModule,
     OnboardingModule,
+    PeopleMetadataModule,
   ],
   controllers: [HealthController],
 })
