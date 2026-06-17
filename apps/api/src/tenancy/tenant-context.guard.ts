@@ -11,6 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { AuthSession } from '../auth/entities/auth-session.entity';
 import { TenantUser } from '../authorization/entities/tenant-user.entity';
 import { TenantRole } from '../authorization/entities/tenant-role.entity';
+import { AccessResolutionService } from '../access-control/access-resolution.service';
 
 @Injectable()
 export class TenantContextGuard implements CanActivate {
@@ -23,6 +24,7 @@ export class TenantContextGuard implements CanActivate {
     private tenantUserRepo: Repository<TenantUser>,
     @InjectRepository(TenantRole)
     private tenantRoleRepo: Repository<TenantRole>,
+    private accessResolutionService: AccessResolutionService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -74,6 +76,11 @@ export class TenantContextGuard implements CanActivate {
       scopes = role?.scopes ?? [];
     }
 
+    const resolvedAccess = await this.accessResolutionService.resolveForUser({
+      tenantId,
+      tenantUserId: tenantUser.id,
+    });
+
     request.tenantContext = {
       tenantId,
       tenantUserId: tenantUser.id,
@@ -82,6 +89,7 @@ export class TenantContextGuard implements CanActivate {
       sessionId: payload.sid,
       channel: session.channel,
       scopes,
+      resolvedAccess,
     };
 
     return true;

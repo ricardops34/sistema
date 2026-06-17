@@ -8,11 +8,13 @@ import { AuthSession } from '../auth/entities/auth-session.entity';
 import { TenantUser } from '../authorization/entities/tenant-user.entity';
 import { TenantRole } from '../authorization/entities/tenant-role.entity';
 import { AuthModule } from '../auth/auth.module';
+import { AccessControlModule } from '../access-control/access-control.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([AuthSession, TenantUser, TenantRole]),
     AuthModule,
+    AccessControlModule,
   ],
   providers: [TenantContextGuard, ChannelGuard, ScopesGuard, Reflector],
   exports: [TenantContextGuard, ChannelGuard, ScopesGuard, TypeOrmModule, AuthModule],

@@ -7,6 +7,7 @@ import { TenantPersonContextCodeType } from './entities/tenant-person-context-co
 import { TenantFieldRule } from './entities/tenant-field-rule.entity';
 import { TenantPersonPolicy } from '../tenant-settings/entities/tenant-person-policy.entity';
 import { TenancyModule } from '../tenancy/tenancy.module';
+import { AccessControlModule } from '../access-control/access-control.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { TenancyModule } from '../tenancy/tenancy.module';
       TenantPersonPolicy,
     ]),
     TenancyModule,
+    AccessControlModule,
   ],
   controllers: [PeopleMetadataController],
   providers: [PeopleMetadataService],

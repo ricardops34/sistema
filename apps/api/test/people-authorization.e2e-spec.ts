@@ -54,13 +54,52 @@ describe('People Authorization (e2e)', () => {
       `INSERT INTO tenant_role (tenant_id, name, slug, scopes, is_system)
        VALUES ($1, $2, $3, $4::jsonb, false)
        RETURNING id`,
-      [tenantId, 'Consulta Pessoas', `readonly-${Date.now()}`, '["people.read"]'],
+      [tenantId, 'Legado Vazio', `legacy-empty-${Date.now()}`, '[]'],
+    );
+
+    const [limitedTenantUser] = await dataSource.query(
+      `INSERT INTO tenant_user (tenant_id, platform_identity_id, role_id, channel, is_active)
+       VALUES ($1, $2, $3, 'backoffice', true)
+       RETURNING id`,
+      [tenantId, limitedIdentity.id, readonlyRole.id],
+    );
+
+    const [profile] = await dataSource.query(
+      `INSERT INTO tenant_profile (tenant_id, code, name, is_system)
+       VALUES ($1, $2, $3, false)
+       RETURNING id`,
+      [tenantId, `readonly-profile-${Date.now()}`, 'Consulta Pessoas'],
+    );
+
+    const [routine] = await dataSource.query(
+      `SELECT id FROM app_routine WHERE code = $1`,
+      ['people'],
+    );
+
+    const [action] = await dataSource.query(
+      `SELECT ara.id
+       FROM app_routine_action ara
+       INNER JOIN app_routine ar ON ar.id = ara.routine_id
+       WHERE ar.code = $1 AND ara.code = $2`,
+      ['people', 'read'],
     );
 
     await dataSource.query(
-      `INSERT INTO tenant_user (tenant_id, platform_identity_id, role_id, channel, is_active)
-       VALUES ($1, $2, $3, 'backoffice', true)`,
-      [tenantId, limitedIdentity.id, readonlyRole.id],
+      `INSERT INTO tenant_profile_routine_grant (tenant_profile_id, app_routine_id, is_allowed)
+       VALUES ($1, $2, true)`,
+      [profile.id, routine.id],
+    );
+
+    await dataSource.query(
+      `INSERT INTO tenant_profile_action_grant (tenant_profile_id, app_routine_action_id, is_allowed)
+       VALUES ($1, $2, true)`,
+      [profile.id, action.id],
+    );
+
+    await dataSource.query(
+      `INSERT INTO tenant_user_profile (tenant_user_id, tenant_profile_id)
+       VALUES ($1, $2)`,
+      [limitedTenantUser.id, profile.id],
     );
 
     const adminLogin = await request(app.getHttpServer())
@@ -104,6 +143,14 @@ describe('People Authorization (e2e)', () => {
       .set('Authorization', `Bearer ${limitedAccessToken}`);
 
     expect(listResponse.status).toBe(200);
+  });
+
+  it('uses routine and action grants instead of legacy role scopes', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/people')
+      .set('Authorization', `Bearer ${limitedAccessToken}`);
+
+    expect(response.status).toBe(200);
   });
 
   it('forbids metadata changes without metadata scope', async () => {

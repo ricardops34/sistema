@@ -8,6 +8,10 @@ export interface TenantContext {
   sessionId: string;
   channel: string;
   scopes: string[];
+  resolvedAccess: {
+    routines: string[];
+    actions: string[];
+  };
 }
 
 export const CurrentTenant = createParamDecorator(

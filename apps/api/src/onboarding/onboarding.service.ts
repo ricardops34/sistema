@@ -8,11 +8,16 @@ import { TenantPersonPolicy } from '../tenant-settings/entities/tenant-person-po
 import { TenantUser } from '../authorization/entities/tenant-user.entity';
 import { TenantRole } from '../authorization/entities/tenant-role.entity';
 import { PlatformIdentity } from '../auth/entities/platform-identity.entity';
-import { AuthSession } from '../auth/entities/auth-session.entity';
+import { TenantProfileEntity } from '../access-control/entities/tenant-profile.entity';
+import { TenantProfileRoutineGrantEntity } from '../access-control/entities/tenant-profile-routine-grant.entity';
+import { TenantProfileActionGrantEntity } from '../access-control/entities/tenant-profile-action-grant.entity';
+import { TenantUserProfileEntity } from '../access-control/entities/tenant-user-profile.entity';
 
 interface TenantRow { id: string; slug: string; display_name: string; is_active: boolean; created_at: Date }
-interface OnboardingRow { id: string }
 interface RoleRow { id: string }
+interface ProfileRow { id: string }
+interface CatalogRoutineRow { id: string }
+interface CatalogActionRow { id: string }
 
 @Injectable()
 export class OnboardingService {
@@ -91,7 +96,53 @@ export class OnboardingService {
         channel: 'backoffice',
         isActive: true,
       });
-      await queryRunner.manager.save(TenantUser, tenantUser);
+      const savedTenantUser = await queryRunner.manager.save(TenantUser, tenantUser);
+
+      const adminProfile = queryRunner.manager.create(TenantProfileEntity, {
+        tenantId: tenant.id,
+        code: 'admin',
+        name: 'Administrador',
+        description: 'Perfil administrativo padrão do tenant',
+        isSystem: true,
+        isActive: true,
+      });
+      const savedProfile: ProfileRow = await queryRunner.manager.save(TenantProfileEntity, adminProfile);
+
+      const routines: CatalogRoutineRow[] = await queryRunner.query(
+        `SELECT id FROM app_routine WHERE is_active = true`,
+      );
+
+      if (routines.length > 0) {
+        const routineGrants = routines.map((routine) =>
+          queryRunner.manager.create(TenantProfileRoutineGrantEntity, {
+            tenantProfileId: savedProfile.id,
+            appRoutineId: routine.id,
+            isAllowed: true,
+          }),
+        );
+        await queryRunner.manager.save(TenantProfileRoutineGrantEntity, routineGrants);
+      }
+
+      const actions: CatalogActionRow[] = await queryRunner.query(
+        `SELECT id FROM app_routine_action WHERE is_active = true`,
+      );
+
+      if (actions.length > 0) {
+        const actionGrants = actions.map((action) =>
+          queryRunner.manager.create(TenantProfileActionGrantEntity, {
+            tenantProfileId: savedProfile.id,
+            appRoutineActionId: action.id,
+            isAllowed: true,
+          }),
+        );
+        await queryRunner.manager.save(TenantProfileActionGrantEntity, actionGrants);
+      }
+
+      const tenantUserProfile = queryRunner.manager.create(TenantUserProfileEntity, {
+        tenantUserId: savedTenantUser.id,
+        tenantProfileId: savedProfile.id,
+      });
+      await queryRunner.manager.save(TenantUserProfileEntity, tenantUserProfile);
 
       await queryRunner.commitTransaction();
 
