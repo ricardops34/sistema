@@ -1,0 +1,12 @@
+{
+  "name": "multitenant-platform",
+  "private": true,
+  "packageManager": "pnpm@10.0.0",
+  "scripts": {
+    "dev:api": "pnpm --filter api start:dev",
+    "dev:backoffice": "pnpm --filter backoffice start",
+    "dev:portal": "pnpm --filter portal start",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test"
+  }
+}
