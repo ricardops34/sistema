@@ -9,7 +9,7 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() dto: LoginDto) {
-    return this.authService.login(dto.login, dto.password);
+    return this.authService.login(dto.login, dto.password, dto.channel, dto.tenantSlug);
   }
 
   @Post('refresh')

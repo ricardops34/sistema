@@ -18,20 +18,24 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  login(login: string, password: string) {
-    return this.http.post<AuthTokens>(`${this.API}/auth/login`, { login, password }).pipe(
+  login(login: string, password: string, tenantSlug: string) {
+    return this.http
+      .post<AuthTokens>(`${this.API}/auth/login`, { login, password, tenantSlug, channel: 'backoffice' })
+      .pipe(
       tap((tokens) => {
         localStorage.setItem('access_token', tokens.accessToken);
         localStorage.setItem('refresh_token', tokens.refreshToken);
+        localStorage.setItem('tenant_slug', tenantSlug);
         this._loggedIn.next(true);
       }),
-    );
+      );
   }
 
   logout() {
     const refreshToken = localStorage.getItem('refresh_token');
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    localStorage.removeItem('tenant_slug');
     this._loggedIn.next(false);
     if (refreshToken) {
       this.http.post(`${this.API}/auth/logout`, { refreshToken }).subscribe();

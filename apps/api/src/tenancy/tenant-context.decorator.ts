@@ -3,6 +3,7 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 export interface TenantContext {
   tenantId: string;
   tenantUserId: string;
+  personId?: string | null;
   identityId: string;
   sessionId: string;
   channel: string;

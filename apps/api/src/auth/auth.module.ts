@@ -9,10 +9,11 @@ import { JwtAccessStrategy } from './jwt-access.strategy';
 import { PlatformIdentity } from './entities/platform-identity.entity';
 import { AuthSession } from './entities/auth-session.entity';
 import { AuthRefreshToken } from './entities/auth-refresh-token.entity';
+import { TenantUser } from '../authorization/entities/tenant-user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PlatformIdentity, AuthSession, AuthRefreshToken]),
+    TypeOrmModule.forFeature([PlatformIdentity, AuthSession, AuthRefreshToken, TenantUser]),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],

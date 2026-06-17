@@ -4,10 +4,11 @@ import { PeopleRequestsController } from './people-requests.controller';
 import { PeopleRequestsService } from './people-requests.service';
 import { PersonUpdateRequest } from './entities/person-update-request.entity';
 import { TenancyModule } from '../tenancy/tenancy.module';
+import { TenantUser } from '../authorization/entities/tenant-user.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PersonUpdateRequest]),
+    TypeOrmModule.forFeature([PersonUpdateRequest, TenantUser]),
     TenancyModule,
   ],
   controllers: [PeopleRequestsController],

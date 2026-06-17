@@ -63,7 +63,16 @@ export class OnboardingService {
         tenantId: tenant.id,
         name: 'Administrador',
         slug: 'admin',
-        scopes: ['*'],
+        scopes: [
+          '*',
+          'people.read',
+          'people.create',
+          'people.update',
+          'people.metadata.read',
+          'people.metadata.manage',
+          'people.request.read',
+          'people.request.create',
+        ],
         isSystem: true,
       });
       const savedRole: RoleRow = await queryRunner.manager.save(TenantRole, adminRole);

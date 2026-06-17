@@ -13,6 +13,7 @@ import { AuthService } from '../../core/auth/auth.service';
     <div style="display:flex;align-items:center;justify-content:center;height:100vh;">
       <div style="width:360px;">
         <h2>Backoffice</h2>
+        <po-input label="Tenant" [(ngModel)]="tenantSlug" name="tenantSlug"></po-input>
         <po-input label="E-mail / Login" [(ngModel)]="login" name="login"></po-input>
         <po-password label="Senha" [(ngModel)]="password" name="password"></po-password>
         <po-button label="Entrar" (p-click)="doLogin()" [p-loading]="loading" p-type="primary"></po-button>
@@ -21,6 +22,7 @@ import { AuthService } from '../../core/auth/auth.service';
   `,
 })
 export class LoginComponent {
+  tenantSlug = '';
   login = '';
   password = '';
   loading = false;
@@ -29,7 +31,7 @@ export class LoginComponent {
 
   doLogin() {
     this.loading = true;
-    this.authService.login(this.login, this.password).subscribe({
+    this.authService.login(this.login, this.password, this.tenantSlug).subscribe({
       next: () => this.router.navigate(['/people']),
       error: () => {
         this.loading = false;

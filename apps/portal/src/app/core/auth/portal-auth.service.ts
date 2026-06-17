@@ -18,20 +18,24 @@ export class PortalAuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  login(login: string, password: string) {
-    return this.http.post<AuthTokens>(`${this.API}/auth/login`, { login, password }).pipe(
+  login(login: string, password: string, tenantSlug: string) {
+    return this.http
+      .post<AuthTokens>(`${this.API}/auth/login`, { login, password, tenantSlug, channel: 'portal' })
+      .pipe(
       tap((tokens) => {
         localStorage.setItem('portal_access_token', tokens.accessToken);
         localStorage.setItem('portal_refresh_token', tokens.refreshToken);
+        localStorage.setItem('portal_tenant_slug', tenantSlug);
         this._loggedIn.next(true);
       }),
-    );
+      );
   }
 
   logout() {
     const refreshToken = localStorage.getItem('portal_refresh_token');
     localStorage.removeItem('portal_access_token');
     localStorage.removeItem('portal_refresh_token');
+    localStorage.removeItem('portal_tenant_slug');
     this._loggedIn.next(false);
     if (refreshToken) {
       this.http.post(`${this.API}/auth/logout`, { refreshToken }).subscribe();

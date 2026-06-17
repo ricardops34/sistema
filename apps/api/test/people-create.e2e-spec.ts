@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { DataSource } from 'typeorm';
 
 describe('People (e2e)', () => {
   let app: INestApplication;
@@ -18,7 +17,6 @@ describe('People (e2e)', () => {
     app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
     await app.init();
 
-    const ds = app.get(DataSource);
     const slug = `people-${Date.now()}`;
     const adminEmail = `people-admin-${Date.now()}@test.local`;
 
@@ -30,14 +28,9 @@ describe('People (e2e)', () => {
 
     const loginRes = await request(app.getHttpServer())
       .post('/auth/login')
-      .send({ login: adminEmail, password: 'Mudar@123' });
+      .send({ login: adminEmail, password: 'Mudar@123', channel: 'backoffice', tenantSlug: slug });
 
     accessToken = loginRes.body.accessToken;
-
-    await ds.query(
-      `UPDATE auth_session SET tenant_id = $1 WHERE platform_identity_id = (SELECT id FROM platform_identity WHERE email = $2)`,
-      [tenantId, adminEmail],
-    );
   });
 
   afterAll(async () => {

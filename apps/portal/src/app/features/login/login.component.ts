@@ -13,6 +13,7 @@ import { PortalAuthService } from '../../core/auth/portal-auth.service';
     <div style="display:flex;align-items:center;justify-content:center;height:100vh;">
       <div style="width:360px;">
         <h2>Portal do Colaborador</h2>
+        <po-input label="Tenant" [(ngModel)]="tenantSlug" name="tenantSlug"></po-input>
         <po-input label="E-mail" [(ngModel)]="login" name="login"></po-input>
         <po-password label="Senha" [(ngModel)]="password" name="password"></po-password>
         <po-button label="Entrar" (p-click)="doLogin()" [p-loading]="loading" p-type="primary"></po-button>
@@ -21,6 +22,7 @@ import { PortalAuthService } from '../../core/auth/portal-auth.service';
   `,
 })
 export class LoginComponent {
+  tenantSlug = '';
   login = '';
   password = '';
   loading = false;
@@ -29,7 +31,7 @@ export class LoginComponent {
 
   doLogin() {
     this.loading = true;
-    this.auth.login(this.login, this.password).subscribe({
+    this.auth.login(this.login, this.password, this.tenantSlug).subscribe({
       next: () => this.router.navigate(['/person']),
       error: () => { this.loading = false; this.notification.error('Credenciais inválidas'); },
       complete: () => (this.loading = false),

@@ -38,14 +38,9 @@ describe('Audit (e2e)', () => {
 
     const loginRes = await request(app.getHttpServer())
       .post('/auth/login')
-      .send({ login: adminEmail, password: 'Mudar@123' });
+      .send({ login: adminEmail, password: 'Mudar@123', channel: 'backoffice', tenantSlug: slug });
 
     accessToken = loginRes.body.accessToken;
-
-    await ds.query(
-      `UPDATE auth_session SET tenant_id = $1 WHERE platform_identity_id = (SELECT id FROM platform_identity WHERE email = $2)`,
-      [tenantId, adminEmail],
-    );
   });
 
   afterAll(async () => {
@@ -55,10 +50,12 @@ describe('Audit (e2e)', () => {
   it('stores audit event after person creation', async () => {
     const logSpy = jest.spyOn(auditService, 'log');
 
-    await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post('/people')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({ nameLegal: 'Auditado Silva' });
+
+    expect(response.status).toBe(201);
 
     await new Promise((r) => setTimeout(r, 100));
 

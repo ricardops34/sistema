@@ -35,14 +35,9 @@ describe('People Duplicate (e2e)', () => {
 
     const loginRes = await request(app.getHttpServer())
       .post('/auth/login')
-      .send({ login: adminEmail, password: 'Mudar@123' });
+      .send({ login: adminEmail, password: 'Mudar@123', channel: 'backoffice', tenantSlug: slug });
 
     accessToken = loginRes.body.accessToken;
-
-    await ds.query(
-      `UPDATE auth_session SET tenant_id = $1 WHERE platform_identity_id = (SELECT id FROM platform_identity WHERE email = $2)`,
-      [tenantId, adminEmail],
-    );
   });
 
   afterAll(async () => {

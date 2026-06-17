@@ -50,7 +50,7 @@ export class TenantContextGuard implements CanActivate {
 
     if (!session) throw new UnauthorizedException('Sessão inválida');
 
-    const tenantId = session.tenantId ?? request.headers['x-tenant-id'];
+    const tenantId = session.tenantId;
     if (!tenantId) {
       throw new UnauthorizedException('Tenant não identificado');
     }
@@ -59,6 +59,7 @@ export class TenantContextGuard implements CanActivate {
       where: {
         tenantId,
         platformIdentityId: payload.sub,
+        channel: session.channel,
         isActive: true,
       },
     });
@@ -67,13 +68,16 @@ export class TenantContextGuard implements CanActivate {
 
     let scopes: string[] = [];
     if (tenantUser.roleId) {
-      const role = await this.tenantRoleRepo.findOne({ where: { id: tenantUser.roleId } });
+      const role = await this.tenantRoleRepo.findOne({
+        where: { id: tenantUser.roleId, tenantId },
+      });
       scopes = role?.scopes ?? [];
     }
 
     request.tenantContext = {
       tenantId,
       tenantUserId: tenantUser.id,
+      personId: tenantUser.personId,
       identityId: payload.sub,
       sessionId: payload.sid,
       channel: session.channel,

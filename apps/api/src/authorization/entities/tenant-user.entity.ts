@@ -11,6 +11,9 @@ export class TenantUser {
   @Column({ name: 'platform_identity_id' })
   platformIdentityId: string;
 
+  @Column({ name: 'person_id', nullable: true })
+  personId: string | null;
+
   @Column({ name: 'role_id', nullable: true })
   roleId: string;
 

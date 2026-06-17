@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
@@ -8,6 +8,9 @@ import { randomBytes, createHash } from 'crypto';
 import { PlatformIdentity } from './entities/platform-identity.entity';
 import { AuthSession } from './entities/auth-session.entity';
 import { AuthRefreshToken } from './entities/auth-refresh-token.entity';
+import { TenantUser } from '../authorization/entities/tenant-user.entity';
+
+type LoginChannel = 'platform' | 'backoffice' | 'portal';
 
 @Injectable()
 export class AuthService {
@@ -18,25 +21,69 @@ export class AuthService {
     private sessionRepo: Repository<AuthSession>,
     @InjectRepository(AuthRefreshToken)
     private refreshTokenRepo: Repository<AuthRefreshToken>,
+    @InjectRepository(TenantUser)
+    private tenantUserRepo: Repository<TenantUser>,
     private jwtService: JwtService,
     private config: ConfigService,
+    private dataSource: DataSource,
   ) {}
 
-  async login(login: string, password: string) {
+  async login(
+    login: string,
+    password: string,
+    channel: LoginChannel = 'platform',
+    tenantSlug?: string,
+  ) {
     const identity = await this.identityRepo.findOne({ where: { email: login, status: 'active' } });
     if (!identity) throw new UnauthorizedException('Credenciais inválidas');
 
     const valid = await bcrypt.compare(password, identity.passwordHash);
     if (!valid) throw new UnauthorizedException('Credenciais inválidas');
 
+    let tenantId: string | null = null;
+
+    if (channel !== 'platform') {
+      if (!tenantSlug) {
+        throw new UnauthorizedException('Tenant é obrigatório para este canal');
+      }
+
+      const [tenant] = await this.dataSource.query(
+        `SELECT id
+         FROM tenant
+         WHERE slug = $1
+           AND status = 'active'`,
+        [tenantSlug],
+      );
+
+      if (!tenant) {
+        throw new UnauthorizedException('Tenant inválido');
+      }
+
+      const tenantUser = await this.tenantUserRepo.findOne({
+        where: {
+          tenantId: tenant.id,
+          platformIdentityId: identity.id,
+          channel,
+          isActive: true,
+        },
+      });
+
+      if (!tenantUser) {
+        throw new UnauthorizedException('Usuário sem acesso ao tenant neste canal');
+      }
+
+      tenantId = tenant.id;
+    }
+
     const session = this.sessionRepo.create({
       platformIdentityId: identity.id,
-      channel: 'backoffice',
+      tenantId: tenantId ?? undefined,
+      channel,
       isActive: true,
     });
     await this.sessionRepo.save(session);
 
-    return this.issueTokens(session.id, identity.id);
+    return this.issueTokens(session.id, identity.id, channel, tenantId);
   }
 
   async refresh(rawRefreshToken: string) {
@@ -53,7 +100,12 @@ export class AuthService {
     const session = await this.sessionRepo.findOne({ where: { id: token.sessionId, isActive: true } });
     if (!session) throw new UnauthorizedException('Sessão inválida');
 
-    return this.issueTokens(session.id, session.platformIdentityId);
+    return this.issueTokens(
+      session.id,
+      session.platformIdentityId,
+      (session.channel as LoginChannel) ?? 'platform',
+      session.tenantId ?? null,
+    );
   }
 
   async logout(rawRefreshToken: string) {
@@ -61,8 +113,13 @@ export class AuthService {
     await this.refreshTokenRepo.update({ tokenHash: hash }, { isRevoked: true });
   }
 
-  private async issueTokens(sessionId: string, identityId: string) {
-    const payload = { sub: identityId, sid: sessionId };
+  private async issueTokens(
+    sessionId: string,
+    identityId: string,
+    channel: LoginChannel,
+    tenantId: string | null,
+  ) {
+    const payload = { sub: identityId, sid: sessionId, channel, tenantId };
     const expiresIn = this.config.get('JWT_EXPIRES_IN', '15m');
     const refreshExpiresIn = this.config.get('JWT_REFRESH_EXPIRES_IN', '7d');
 
@@ -81,7 +138,14 @@ export class AuthService {
       }),
     );
 
-    return { accessToken, refreshToken: rawRefresh, expiresIn: this.parseDurationSeconds(expiresIn) };
+    return {
+      accessToken,
+      refreshToken: rawRefresh,
+      expiresIn: this.parseDurationSeconds(expiresIn),
+      sessionId,
+      channel,
+      tenantId,
+    };
   }
 
   private hashToken(raw: string): string {
