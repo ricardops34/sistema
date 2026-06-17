@@ -171,4 +171,47 @@ Pergunta pendente:
 Última resposta confirmada antes da pausa:
 
 - `features` precisam existir em um catálogo global definido pelo `Super Admin`
+## 4. Pendencias registradas
 
+### 4.1 Regra funcional ainda em aberto
+
+- definir se o `tenant` pode habilitar qualquer `feature` global existente
+- ou se o `tenant` so pode habilitar `features` marcadas como `auto habilitaveis pelo tenant`
+
+Impacto:
+
+- a Task 8 permanece bloqueada atÃ© fechamento dessa regra
+- a validacao final de self-service de `features` do tenant ainda nao pode ser consolidada
+
+### 4.2 Restricao estrutural atual do modelo de perfis
+
+- o modelo atual de `tenant_profile` continua escopado por `tenant`
+- a governanca global implementada nas Tasks 6 e 7 usa `tenantId` explicito nas APIs de `Super Admin`
+- perfis verdadeiramente globais exigem evolucao estrutural adicional do schema
+
+Impacto:
+
+- a API global de perfis funciona no estado atual
+- mas a plataforma ainda nao tem um catalogo de perfis global desacoplado do `tenant`
+
+## 5. Onde estamos
+
+- Tasks 1 a 7 do plano foram implementadas no backend `apps/api`
+- o modelo fisico administrativo foi endurecido com suporte a atribuicao por tenant, vinculo protegido por plataforma, visibilidade de menu e limites do tenant
+- a API `GET /me/menu` e `GET /me/permissions` foi entregue
+- o modulo `tenant-admin` foi entregue para usuarios, perfis do usuario e configuracoes do proprio tenant
+- o modulo `super-admin` foi entregue para perfis, grants, overrides e catalogo global de modulos, grupos, rotinas e acoes
+- a execucao foi interrompida antes da Task 8, conforme combinado
+
+Verificacao executada:
+
+- `pnpm --filter api test:e2e -- admin-governance-schema.e2e-spec.ts menu.e2e-spec.ts tenant-users.e2e-spec.ts tenant-user-profiles.e2e-spec.ts tenant-settings.e2e-spec.ts admin-profiles.e2e-spec.ts super-admin-catalog.e2e-spec.ts --runInBand`
+- resultado: `7` suites e `8` testes passando
+
+## 6. Proximos passos
+
+1. fechar a regra funcional da Task 8 sobre auto-habilitacao de `features` pelo tenant
+2. implementar a governanca global de `features` e a validacao de escolha de `features` do tenant
+3. adaptar o backoffice para consumir `GET /me/menu` e expor os fluxos administrativos
+4. concluir auditoria administrativa e documentacao das APIs
+5. decidir se o modelo de perfis deve continuar tenant-scoped ou evoluir para um catalogo global real

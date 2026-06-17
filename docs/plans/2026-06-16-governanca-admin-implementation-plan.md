@@ -379,6 +379,15 @@ git commit -m "feat: add super admin catalog governance"
 
 ### Task 8: Implementar governanca global de features e tenant features
 
+> **Status registrado em 2026-06-17:** nao iniciar antes de definir a politica de auto-habilitacao de `features` pelo tenant.
+>
+> Pendencia funcional:
+> - permitir ao `tenant` habilitar qualquer `feature` global existente
+> - ou restringir a escolha a `features` marcadas como `auto habilitaveis pelo tenant`
+>
+> Pendencia estrutural correlata:
+> - a camada de governanca global de perfis segue tenant-scoped no schema atual e usa `tenantId` explicito nas APIs de `Super Admin`
+
 **Files:**
 - Create: `apps/api/src/super-admin/super-admin-features.controller.ts`
 - Create: `apps/api/src/super-admin/super-admin-features.service.ts`
@@ -543,3 +552,18 @@ git commit -m "chore: add admin governance audit and docs"
 - usuario sem perfil ativo aplicavel e bloqueado automaticamente
 - inativacao global de catalogo produz efeito imediato em menu e autorizacao
 - auditoria cobre operacoes administrativas principais
+
+## Status de execucao
+
+### Onde estamos
+
+- Tasks 1 a 7 concluidas no backend
+- Task 8 pausada por pendencia funcional da politica de auto-habilitacao de `features`
+- Tasks 9 e 10 ainda nao iniciadas
+
+### Proximos passos
+
+1. decidir a politica de self-service de `features` do tenant
+2. executar a Task 8
+3. executar a Task 9
+4. executar a Task 10

@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsEmail, IsOptional, Matches } from 'class-validator';
+import { IsString, IsNotEmpty, IsEmail, IsOptional, Matches, IsArray, IsObject } from 'class-validator';
 
 export class CreateTenantDto {
   @IsString()
@@ -16,4 +16,17 @@ export class CreateTenantDto {
   @IsString()
   @IsOptional()
   adminPassword?: string;
+
+  @IsOptional()
+  @IsString()
+  planCode?: string;
+
+  @IsOptional()
+  @IsObject()
+  limits?: Record<string, unknown>;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  enabledFeatures?: string[];
 }

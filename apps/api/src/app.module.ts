@@ -11,6 +11,9 @@ import { PeopleMetadataModule } from './people-metadata/people-metadata.module';
 import { PeopleRequestsModule } from './people-requests/people-requests.module';
 import { AuditModule } from './audit/audit.module';
 import { AccessControlModule } from './access-control/access-control.module';
+import { MeModule } from './me/me.module';
+import { TenantAdminModule } from './tenant-admin/tenant-admin.module';
+import { SuperAdminModule } from './super-admin/super-admin.module';
 
 @Module({
   imports: [
@@ -27,6 +30,9 @@ import { AccessControlModule } from './access-control/access-control.module';
     PeopleRequestsModule,
     AuditModule,
     AccessControlModule,
+    MeModule,
+    TenantAdminModule,
+    SuperAdminModule,
   ],
   controllers: [HealthController],
 })

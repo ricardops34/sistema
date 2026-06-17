@@ -99,7 +99,9 @@ describe('Menu (e2e)', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    if (app) {
+      await app.close();
+    }
   });
 
   it('returns filtered menu tree for authenticated user', async () => {
